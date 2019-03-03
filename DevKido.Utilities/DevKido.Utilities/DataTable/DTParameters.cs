@@ -1,5 +1,6 @@
 ﻿//for any query or any solution in IT, please contact to anrorathod@gmail.com - +919725437729
 using System.Collections.Generic;
+using System.Web.Http.ModelBinding;
 
 namespace DevKido.Utilities.DataTable
 {
@@ -67,6 +68,7 @@ namespace DevKido.Utilities.DataTable
     /// <summary>
     /// The parameters sent by jQuery DataTables in AJAX queries.
     /// </summary>
+    [ModelBinder(typeof(DataTableModelBinder))]
     public class DTParameters
     {
         /// <summary>
@@ -112,8 +114,12 @@ namespace DevKido.Utilities.DataTable
             get
             {
                 return Columns != null && Order != null && Order.Length > 0
-                    ? (Columns[Order[0].Column].Data + (Order[0].Dir == DTOrderDir.DESC ? " " + Order[0].Dir : string.Empty))
+                    ? (Columns[Order[0].Column].Data + (Order[0].Dir == "DESC" ? " " + Order[0].Dir : string.Empty))
                     : null;
+            }
+            set
+            {
+                Columns[Order[0].Column].Data = value;
             }
         }
 
@@ -174,7 +180,7 @@ namespace DevKido.Utilities.DataTable
         /// Ordering direction for this column.
         /// It will be dt-string asc or dt-string desc to indicate ascending ordering or descending ordering, respectively.
         /// </summary>
-        public DTOrderDir Dir { get; set; }
+        public string Dir { get; set; }
     }
 
     /// <summary>
