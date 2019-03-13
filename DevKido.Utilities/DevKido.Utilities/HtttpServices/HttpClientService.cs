@@ -52,8 +52,7 @@ namespace DevKido.Utilities.HtttpServices
                 }
             }
             catch { throw; }
-        }
-
+        } 
         public T Post<T>(string apiUrl, ExpandoObject dynamicObject, string token = null)
         {
             try
@@ -75,7 +74,7 @@ namespace DevKido.Utilities.HtttpServices
 
                 }
             }
-            catch { throw; }
+            catch(Exception ex)  { throw; }
         }
         public T PostFormUrlEncoded<T>(string apiUrl, Dictionary<string, string> httpHeaderParams)
         {
@@ -94,6 +93,24 @@ namespace DevKido.Utilities.HtttpServices
                 }
             }
         }
+        public UserToken GetUserAccessToken<UserToken>(string apiUrl, string username, string password)
+        {
+            var form = new Dictionary<string, string>
+            {
+                {"grant_type", "password"},
+                {"UserName", username},
+                {"Password", password},
+            };
+
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage tokenResponse = httpClient.PostAsync(apiUrl, new FormUrlEncodedContent(form)).Result;
+                var jsonContent = tokenResponse.Content.ReadAsStringAsync().Result;
+                UserToken token = JsonConvert.DeserializeObject<UserToken>(jsonContent);
+                return token;
+            }
+        }
+
         public async Task<T> GetAsync<T>(string apiUrl, string token)
         {
             try
@@ -176,6 +193,22 @@ namespace DevKido.Utilities.HtttpServices
                 }
             }
         }
+        public async Task<UserToken> GetUserAccessTokenAsync<UserToken>(string apiUrl, string username, string password)
+        {  
+            var form = new Dictionary<string, string>
+            {
+                {"grant_type", "password"},
+                {"UserName", username},
+                {"Password", password},
+            };
 
+            using (HttpClient httpClient = new HttpClient())
+            {
+                HttpResponseMessage tokenResponse = await httpClient.PostAsync(apiUrl, new FormUrlEncodedContent(form));
+                var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
+                UserToken token = JsonConvert.DeserializeObject<UserToken>(jsonContent);
+                return token;
+            } 
+        }
     }
 }
